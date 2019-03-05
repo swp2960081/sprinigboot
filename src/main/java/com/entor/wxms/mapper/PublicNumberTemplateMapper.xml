@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PublicNumberTemplate">
+	
+	<insert id="add" parameterType="PublicNumberTemplate">
+		insert into wxms_public_number_template(pId,tId) 
+		values(#{pId},#{tId})
+	</insert>
+	
+	<update id="update" parameterType="PublicNumberTemplate">
+		update wxms_public_number_template set
+		pId = #{pId},
+		tId = #{tId}
+		where id = #{id}
+	</update>
+	
+	<select id="queryById" parameterType="int" resultType="PublicNumberTemplate">
+		select * from wxms_public_number_template where id = #{id}
+	</select>
+	
+	<select id="queryAll" parameterType="int" resultType="PublicNumberTemplate">
+		select * from wxms_public_number_template where 1=1
+	</select>
+	
+	<select id="queryByPage" parameterType="map" resultType="PublicNumberTemplate">
+		SELECT * FROM 
+		(
+			SELECT A.*, ROWNUM RN FROM 
+			(SELECT * FROM wxms_public_number_template) A 
+		)
+		WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	
+	<select id="getTotals" resultType="int">
+		select count(*) from wxms_public_number_template
+	</select>
+	
+	<select id="getConditionTotals" resultType="int">
+		select count(*) from wxms_public_number_template #{condition}
+	</select>
+	
+	<delete id="deleteById" parameterType="int">
+		delete from wxms_public_number_template where id = #{id}
+	</delete>
+	
+	<delete id="deleteMore" >
+		delete from wxms_public_number_template where id in
+		<foreach collection="array" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

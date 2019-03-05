@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserPublicNumber">
+	
+	<insert id="add" parameterType="UserPublicNumber">
+		insert into wxms_User_Public_Number(userId,pId) 
+		values(#{userId},#{pId})
+	</insert>
+	
+	<insert id="addMore" parameterType="UserPublicNumber">
+		INSERT ALL 
+		<foreach collection="list" item="s">
+	    	INTO wxms_User_Public_Number(userId,pId) VALUES (#{s.userId},#{s.pId}) 
+	    </foreach>
+	    SELECT 1 FROM DUAL
+	</insert>
+	
+	<update id="update" parameterType="UserPublicNumber">
+		update wxms_User_Public_Number set
+		userId = #{userId},
+		pId = #{pId}
+		where id = #{id}
+	</update>
+	
+	<select id="queryById" parameterType="int" resultType="UserPublicNumber">
+		select * from wxms_User_Public_Number where id = #{id}
+	</select>
+	
+	<select id="queryAll" parameterType="int" resultType="UserPublicNumber">
+		select * from wxms_User_Public_Number where 1=1
+	</select>
+	
+	<select id="queryByPage" parameterType="map" resultType="UserPublicNumber">
+		SELECT * FROM 
+		(
+			SELECT A.*, ROWNUM RN FROM 
+			(SELECT * FROM wxms_User_Public_Number) A 
+		)
+		WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	
+	<select id="queryByPageVo" parameterType="map" resultType="UserPublicNumberVo">
+		SELECT * FROM 
+	    (
+	      SELECT A.*, ROWNUM RN FROM 
+	      (SELECT upn.id,upn.userId,upn.pId,u.userName,pn.publicname 
+	      FROM wxms_User u,wxms_User_Public_Number upn,wxms_Public_Number pn 
+	      where upn.userid=u.id and upn.pid=pn.id) A 
+	    )
+		WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	
+	<select id="getTotals" resultType="int">
+		select count(*) from wxms_User_Public_Number
+	</select>
+	
+	<select id="getConditionTotals" resultType="int">
+		select count(*) from wxms_User_Public_Number #{condition}
+	</select>
+	
+	<delete id="deleteById" parameterType="int">
+		delete from wxms_User_Public_Number where id = #{id}
+	</delete>
+	
+	<delete id="deleteMore" >
+		delete from wxms_User_Public_Number where id in
+		<foreach collection="array" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteUserPublicNumberByUids" >
+		delete from wxms_User_Public_Number where userId in
+		<foreach collection="array" open="(" close=")" separator="," item="userId">
+			#{userId}
+		</foreach>
+	</delete>
+</mapper>

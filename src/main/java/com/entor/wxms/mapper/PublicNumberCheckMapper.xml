@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PublicNumberCheck">
+	
+	<insert id="add" parameterType="PublicNumberCheck">
+		insert into wxms_public_number_check(pId,userId,applyTime,advise,state,checkedTime) 
+		values(#{pId},#{userId},#{applyTime},#{advise},#{state},#{checkedTime})
+	</insert>
+	
+	<insert id="addMore">
+		INSERT ALL 
+		<foreach collection="list" item="s">
+	    	INTO wxms_public_number_check(userId,pId,applyTime) 
+	    	VALUES (#{s.userId},#{s.pId},sysdate) 
+	    </foreach>
+	    SELECT 1 FROM DUAL
+	</insert>
+	
+	<update id="update" parameterType="PublicNumberCheck">
+		update wxms_public_number_check set
+		pId = #{pId},
+		userId = #{userId},
+		advise = #{advise},
+		state = #{state},
+		checkedTime = sysdate
+		where id = #{id}
+	</update>
+	
+	<select id="queryById" parameterType="int" resultType="PublicNumberCheck">
+		select * from wxms_public_number_check where id = #{id}
+	</select>
+	
+	<select id="queryAll" parameterType="int" resultType="PublicNumberCheck">
+		select * from wxms_public_number_check where 1=1
+	</select>
+	
+	<select id="queryByPage" parameterType="map" resultType="PublicNumberCheck">
+		SELECT * FROM 
+		(
+			SELECT A.*, ROWNUM RN FROM 
+			(SELECT * FROM wxms_public_number_check) A 
+		)
+		WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	
+	<select id="queryByPageVo" parameterType="map" resultType="PublicNumberCheckVo">
+		SELECT * FROM 
+		(
+			SELECT A.*, ROWNUM RN FROM 
+			(SELECT pnc.*,u.userName,pn.publicname 
+		        FROM wxms_User u,wxms_public_number_check pnc,wxms_Public_Number pn 
+		        where pnc.userid=u.id and pnc.pid=pn.id) A 
+		)
+		WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	
+	<select id="getTotals" resultType="int">
+		select count(*) from wxms_public_number_check
+	</select>
+	
+	<select id="getConditionTotals" resultType="int">
+		select count(*) from wxms_public_number_check #{condition}
+	</select>
+	
+	<delete id="deleteById" parameterType="int">
+		delete from wxms_public_number_check where id = #{id}
+	</delete>
+	
+	<delete id="deleteMore" >
+		delete from wxms_public_number_check where id in
+		<foreach collection="array" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PublicNumber">
+	
+	<insert id="add" parameterType="PublicNumber">
+		insert into wxms_Public_Number(publicId,publicName,publicType,name,phone,address,logo,regDate,createTime) 
+		values(#{publicId},#{publicName},#{publicType},#{name},#{phone},#{address},#{logo},#{regDate},sysdate)
+	</insert>
+	<!-- 
+	<insert id="addMore">
+		insert into wxms_PublicNumber(name,PublicNumbername,password,sex,age,birthday,createTime) values 
+		<foreach collection="list" item="s" separator=",">
+			(#{s.name},#{s.PublicNumbername},#{s.password},#{s.sex},#{s.age},#{s.birthday},#{s.createTime})
+		</foreach>
+	</insert>
+	 -->
+	<update id="update" parameterType="PublicNumber">
+		update wxms_Public_Number set
+		publicId = #{publicId},
+		publicName = #{publicName},
+		publicType = #{publicType},
+		name = #{name},
+		phone = #{phone},
+		address = #{address},
+		logo = #{logo},
+		regDate = #{regDate},
+		createTime = sysdate
+		where id = #{id}
+	</update>
+	
+	<select id="queryById" parameterType="int" resultType="PublicNumber">
+		select * from wxms_Public_Number where id = #{id}
+	</select>
+	
+	<select id="queryAll" parameterType="int" resultType="PublicNumber">
+		select * from wxms_Public_Number where 1=1
+	</select>
+	
+	<select id="queryByPage" parameterType="map" resultType="PublicNumber">
+		SELECT * FROM 
+		(
+			SELECT A.*, ROWNUM RN FROM 
+			(SELECT * FROM wxms_Public_Number) A 
+		)
+		WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	 
+	<select id="queryAllPublicNumbersByUids" resultType="PublicNumber">
+		select pn.* from 
+		wxms_user u,wxms_user_public_number upn,wxms_public_number pn 
+		where u.id=upn.userId and pn.id=upn.pId and 
+		u.id in 
+		<foreach collection="array" open="(" close=")" separator="," item="uid">
+			#{uid}
+		</foreach> 
+		order by pn.id
+	</select>
+	
+	<select id="getTotals" resultType="int">
+		select count(*) from wxms_Public_Number
+	</select>
+	
+	<select id="getConditionTotals" resultType="int">
+		select count(*) from wxms_Public_Number #{condition}
+	</select>
+	
+	<delete id="deleteById" parameterType="int">
+		delete from wxms_Public_Number where id = #{id}
+	</delete>
+	
+	<delete id="deleteMore" >
+		delete from wxms_Public_Number where id in
+		<foreach collection="array" open="(" close=")" separator="," item="id">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>
